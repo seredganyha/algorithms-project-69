@@ -1,14 +1,17 @@
-import { tokenToTerm, getMapWordOfDocText } from './helpers.js';
+import {
+  tokenToTerm, getMapWordOfDocText, getRankingDocs, compareFnSortRankingDocs,
+} from './helpers.js';
 
 export default function search(docs, string) {
   if (!docs.length || !string) return [];
 
-  const term = tokenToTerm(string);
+  const findStringSetTerm = new Set(string.split(' ').map((token) => tokenToTerm(token)));
   const mapDoc = docs.map((doc) => getMapWordOfDocText(doc.id, doc.text));
 
-  mapDoc.sort((a, b) => (b.textMap.get(term) ?? 0) - (a.textMap.get(term) ?? 0));
+  const rankingDocs = getRankingDocs(mapDoc, findStringSetTerm);
+  rankingDocs.sort(compareFnSortRankingDocs);
 
-  return mapDoc
-    .filter((doc) => doc.textMap.has(term))
+  return rankingDocs
+    .filter((doc) => doc.isAllTermInText || doc.countTermInText)
     .map((doc) => doc.id);
 }

@@ -8,6 +8,16 @@ test('search with processed words in documents', () => {
   expect(search(docs, 'shoot')).toEqual(['doc2', 'doc1']);
 });
 
+test('search multiple words', () => {
+  const doc1 = { id: 'doc1', text: "Don't shoot shoot shoot that thing at me." };
+  const doc2 = { id: 'doc2', text: "I can't shoot straight unless I've had a pint!" };
+  const doc3 = { id: 'doc3', text: "I'm your shooter." };
+  const doc4 = { id: 'doc4', text: "shoot shoot shoot shoot shoot shoot, shoot shoot! shoot 'shoot' " };
+  const doc5 = { id: 'doc5', text: 'shoot at me' };
+  const docs = [doc1, doc2, doc3, doc4, doc5];
+  expect(search(docs, 'shoot at me')).toEqual(['doc1', 'doc5', 'doc4', 'doc2']);
+});
+
 test('search with raw words in documents', () => {
   const doc1 = { id: 'doc1', text: "I can't shoot straight unless I've had a pint!" };
   const doc2 = { id: 'doc2', text: "Don't shoot shoot shoot that thing at me." };
