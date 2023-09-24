@@ -1,11 +1,14 @@
+import { tokenToTerm, getMapWordOfDocText } from './helpers.js';
+
 export default function search(docs, string) {
   if (!docs.length || !string) return [];
 
-  return docs
-    .map((doc) => {
-      const textSet = new Set(doc.text.split(' ').map((el) => el.replace(/[^a-zа-яё]/ig, '')));
-      if (textSet.has(string.replace(/[^a-zа-яё]/ig, ''))) return doc.id;
-      return null;
-    })
-    .filter((doc) => !!doc);
+  const term = tokenToTerm(string);
+  const mapDoc = docs.map((doc) => getMapWordOfDocText(doc.id, doc.text));
+
+  mapDoc.sort((a, b) => (b.textMap.get(term) ?? 0) - (a.textMap.get(term) ?? 0));
+
+  return mapDoc
+    .filter((doc) => doc.textMap.has(term))
+    .map((doc) => doc.id);
 }
